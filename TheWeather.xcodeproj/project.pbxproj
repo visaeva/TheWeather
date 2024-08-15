@@ -12,6 +12,9 @@
 		4C8785D92C6CCD2200E14C76 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C8785D82C6CCD2200E14C76 /* ViewController.swift */; };
 		4C8785DE2C6CCD2A00E14C76 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4C8785DD2C6CCD2A00E14C76 /* Assets.xcassets */; };
 		4C8785E12C6CCD2A00E14C76 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4C8785DF2C6CCD2A00E14C76 /* LaunchScreen.storyboard */; };
+		4C8785EE2C6E0BDC00E14C76 /* OpenMeteoSdk in Frameworks */ = {isa = PBXBuildFile; productRef = 4C8785ED2C6E0BDC00E14C76 /* OpenMeteoSdk */; };
+		4C8785F02C6E0C0100E14C76 /* NetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C8785EF2C6E0C0100E14C76 /* NetworkService.swift */; };
+		4C8785F22C6E35E300E14C76 /* WeatherCodes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C8785F12C6E35E200E14C76 /* WeatherCodes.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -22,6 +25,8 @@
 		4C8785DD2C6CCD2A00E14C76 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		4C8785E02C6CCD2A00E14C76 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		4C8785E22C6CCD2A00E14C76 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		4C8785EF2C6E0C0100E14C76 /* NetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
+		4C8785F12C6E35E200E14C76 /* WeatherCodes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherCodes.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -29,6 +34,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4C8785EE2C6E0BDC00E14C76 /* OpenMeteoSdk in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -57,6 +63,8 @@
 				4C8785D42C6CCD2200E14C76 /* AppDelegate.swift */,
 				4C8785D62C6CCD2200E14C76 /* SceneDelegate.swift */,
 				4C8785D82C6CCD2200E14C76 /* ViewController.swift */,
+				4C8785EF2C6E0C0100E14C76 /* NetworkService.swift */,
+				4C8785F12C6E35E200E14C76 /* WeatherCodes.swift */,
 				4C8785DD2C6CCD2A00E14C76 /* Assets.xcassets */,
 				4C8785DF2C6CCD2A00E14C76 /* LaunchScreen.storyboard */,
 				4C8785E22C6CCD2A00E14C76 /* Info.plist */,
@@ -80,6 +88,9 @@
 			dependencies = (
 			);
 			name = TheWeather;
+			packageProductDependencies = (
+				4C8785ED2C6E0BDC00E14C76 /* OpenMeteoSdk */,
+			);
 			productName = TheWeather;
 			productReference = 4C8785D12C6CCD2200E14C76 /* TheWeather.app */;
 			productType = "com.apple.product-type.application";
@@ -108,6 +119,9 @@
 				Base,
 			);
 			mainGroup = 4C8785C82C6CCD2200E14C76;
+			packageReferences = (
+				4C8785EC2C6E0BDC00E14C76 /* XCRemoteSwiftPackageReference "sdk" */,
+			);
 			productRefGroup = 4C8785D22C6CCD2200E14C76 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -134,6 +148,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4C8785F02C6E0C0100E14C76 /* NetworkService.swift in Sources */,
+				4C8785F22C6E35E300E14C76 /* WeatherCodes.swift in Sources */,
 				4C8785D92C6CCD2200E14C76 /* ViewController.swift in Sources */,
 				4C8785D52C6CCD2200E14C76 /* AppDelegate.swift in Sources */,
 				4C8785D72C6CCD2200E14C76 /* SceneDelegate.swift in Sources */,
@@ -285,7 +301,7 @@
 				INFOPLIST_FILE = TheWeather/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UIMainStoryboardFile = Main;
+				INFOPLIST_KEY_UIStatusBarStyle = "";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -295,9 +311,13 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = ru.visaeva.TheWeather;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -313,7 +333,7 @@
 				INFOPLIST_FILE = TheWeather/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UIMainStoryboardFile = Main;
+				INFOPLIST_KEY_UIStatusBarStyle = "";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -323,9 +343,13 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = ru.visaeva.TheWeather;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
@@ -351,6 +375,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		4C8785EC2C6E0BDC00E14C76 /* XCRemoteSwiftPackageReference "sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/open-meteo/sdk";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		4C8785ED2C6E0BDC00E14C76 /* OpenMeteoSdk */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4C8785EC2C6E0BDC00E14C76 /* XCRemoteSwiftPackageReference "sdk" */;
+			productName = OpenMeteoSdk;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 4C8785C92C6CCD2200E14C76 /* Project object */;
 }

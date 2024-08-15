@@ -7,13 +7,250 @@
 
 import UIKit
 
-class ViewController: UIViewController {
-
+class ViewController: UIViewController, NetworkServiceDelegate {
+    
+    private var networkService = NetworkService()
+    
+    private lazy var backgroundImage: UIImageView = {
+        let image = UIImageView()
+        image.image = UIImage(named: "background")
+        image.contentMode = .scaleAspectFill
+        image.translatesAutoresizingMaskIntoConstraints = false
+        return image
+    }()
+    
+    private lazy var weatherLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 17, weight: .bold)
+        label.textAlignment = .center
+        label.text = "Москва"
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    
+    private lazy var weatherImage: UIImageView = {
+        let imageView = UIImageView()
+        imageView.image = UIImage(named: "weather1")
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        return imageView
+    }()
+    
+    private lazy var weatherDescription: UILabel = {
+        let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 12)
+        label.textAlignment = .center
+        label.text = "Солнечно"
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    
+    private lazy var temperatureLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 40)
+        label.textAlignment = .center
+        label.text = "4 °C"
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    
+    private lazy var pictureStackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .horizontal
+        stackView.spacing = 90
+        stackView.alignment = .center
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        return stackView
+    }()
+    
+    private lazy var temperatureView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.image = UIImage(systemName: "thermometer.medium")
+        imageView.translatesAutoresizingMaskIntoConstraints = true
+        imageView.tintColor = .black
+        return imageView
+    }()
+    
+    private lazy var windView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.image = UIImage(systemName: "wind")
+        imageView.translatesAutoresizingMaskIntoConstraints = true
+        imageView.tintColor = .black
+        return imageView
+    }()
+    
+    private lazy var atmView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.image = UIImage(systemName: "gauge")
+        imageView.translatesAutoresizingMaskIntoConstraints = true
+        imageView.tintColor = .black
+        return imageView
+    }()
+    
+    private lazy var temperatureLabelView: UILabel = {
+        let label = UILabel()
+        label.text = "High/Low"
+        label.font = UIFont.systemFont(ofSize: 10)
+        label.textAlignment = .center
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    
+    private lazy var windLabelView: UILabel = {
+        let label = UILabel()
+        label.text = "Wind"
+        label.font = UIFont.systemFont(ofSize: 10)
+        label.textAlignment = .center
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    
+    private lazy var atmLabelView: UILabel = {
+        let label = UILabel()
+        label.text = "ATM"
+        label.font = UIFont.systemFont(ofSize: 10)
+        label.textAlignment = .center
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    
+    private lazy var temperatureResult: UILabel = {
+        let label = UILabel()
+        label.text = "10°/7°"
+        label.font = UIFont.systemFont(ofSize: 10)
+        label.textAlignment = .center
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    
+    private lazy var windResult: UILabel = {
+        let label = UILabel()
+        label.text = "6 m/s"
+        label.font = UIFont.systemFont(ofSize: 10)
+        label.textAlignment = .center
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    
+    private lazy var atmResult: UILabel = {
+        let label = UILabel()
+        label.text = "747 mm"
+        label.font = UIFont.systemFont(ofSize: 10)
+        label.textAlignment = .center
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
+        view.backgroundColor = .white
+        setupNavBar()
+        setupUI()
+        setupConstraints()
+        
+        networkService.delegate = self
+        networkService.startFetchingData()
     }
-
-
+    
+    private func setupUI() {
+        view.addSubview(backgroundImage)
+        view.addSubview(weatherLabel)
+        view.addSubview(weatherImage)
+        view.addSubview(weatherDescription)
+        view.addSubview(temperatureLabel)
+        view.addSubview(pictureStackView)
+        
+        addIconAndLabel(to: pictureStackView, icon: temperatureView, label: temperatureLabelView, label1: temperatureResult)
+        addIconAndLabel(to: pictureStackView, icon: windView, label: windLabelView, label1: windResult)
+        addIconAndLabel(to: pictureStackView, icon: atmView, label: atmLabelView, label1: atmResult)
+        
+    }
+    private func setupNavBar() {
+        navigationController?.navigationBar.barTintColor = .white
+        title = "Погода"
+        
+        let menuButton = UIBarButtonItem(
+            image: UIImage(systemName: "line.horizontal.3"),
+            style: .plain,
+            target: self,
+            action: #selector(menuButtonTapped)
+        )
+        menuButton.tintColor = .black
+        navigationItem.leftBarButtonItem = menuButton
+    }
+    
+    private func setupConstraints() {
+        NSLayoutConstraint.activate([
+            backgroundImage.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            backgroundImage.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            backgroundImage.topAnchor.constraint(equalTo: view.topAnchor),
+            backgroundImage.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            
+            weatherImage.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            weatherImage.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 5),
+            
+            weatherLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            weatherLabel.topAnchor.constraint(equalTo: weatherImage.bottomAnchor, constant: 10),
+            
+            weatherDescription.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            weatherDescription.topAnchor.constraint(equalTo: weatherLabel.bottomAnchor, constant: 10),
+            
+            temperatureLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            temperatureLabel.topAnchor.constraint(equalTo: weatherDescription.bottomAnchor, constant: 40),
+            
+            pictureStackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            pictureStackView.topAnchor.constraint(equalTo: temperatureLabel.bottomAnchor, constant: 250),
+            
+            
+        ]
+        )
+    }
+    
+    private func addIconAndLabel(to stackView: UIStackView, icon: UIImageView, label: UILabel, label1: UILabel) {
+        let container = UIStackView(arrangedSubviews: [icon, label, label1])
+        container.axis = .vertical
+        container.alignment = .center
+        container.spacing = 5
+        stackView.addArrangedSubview(container)
+    }
+    
+    func didFinishedMaxMinTemperature(maxTemperature: Float, minTemperature: Float) {
+        DispatchQueue.main.async {
+            self.temperatureResult.text = "\(maxTemperature)° /\(minTemperature)°"
+        }
+    }
+    
+    func didFinishedCurrentTemperature(_ temperature: Float) {
+        DispatchQueue.main.async {
+            self.temperatureLabel.text = "\(temperature)°C"
+        }
+    }
+    
+    func didFinishedTimeZome(_ timezone: String) {
+        DispatchQueue.main.async {
+            self.weatherLabel.text = "\(timezone)"
+        }
+    }
+    
+    func didFinishedPressure(_ pressure: Int) {
+        DispatchQueue.main.async {
+            self.atmResult.text = "\(pressure) mm"
+        }
+    }
+    
+    func didFinishedWind(_ wind: Float) {
+        DispatchQueue.main.async {
+            self.windResult.text = "\(wind) m/s"
+        }
+    }
+    
+    func didFinishedCurrentWeatherDescription(_ description: String) {
+        DispatchQueue.main.async {
+            self.weatherDescription.text = "\(description)"
+        }
+    }
+    
+    @objc private func menuButtonTapped() {
+        print("Меню нажали")
+    }
 }
 
