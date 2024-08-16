@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4C83042D2C6F4EF1006FB42A /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C83042C2C6F4EF1006FB42A /* CoreLocation.framework */; };
 		4C8785D52C6CCD2200E14C76 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C8785D42C6CCD2200E14C76 /* AppDelegate.swift */; };
 		4C8785D72C6CCD2200E14C76 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C8785D62C6CCD2200E14C76 /* SceneDelegate.swift */; };
 		4C8785D92C6CCD2200E14C76 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C8785D82C6CCD2200E14C76 /* ViewController.swift */; };
@@ -18,6 +19,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		4C83042C2C6F4EF1006FB42A /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		4C8785D12C6CCD2200E14C76 /* TheWeather.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TheWeather.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4C8785D42C6CCD2200E14C76 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		4C8785D62C6CCD2200E14C76 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -34,6 +36,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4C83042D2C6F4EF1006FB42A /* CoreLocation.framework in Frameworks */,
 				4C8785EE2C6E0BDC00E14C76 /* OpenMeteoSdk in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -41,11 +44,20 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		4C83042B2C6F4EF0006FB42A /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				4C83042C2C6F4EF1006FB42A /* CoreLocation.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		4C8785C82C6CCD2200E14C76 = {
 			isa = PBXGroup;
 			children = (
 				4C8785D32C6CCD2200E14C76 /* TheWeather */,
 				4C8785D22C6CCD2200E14C76 /* Products */,
+				4C83042B2C6F4EF0006FB42A /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -299,6 +311,7 @@
 				DEVELOPMENT_TEAM = H2AXHRTMVM;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = TheWeather/Info.plist;
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIStatusBarStyle = "";
@@ -331,6 +344,7 @@
 				DEVELOPMENT_TEAM = H2AXHRTMVM;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = TheWeather/Info.plist;
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIStatusBarStyle = "";

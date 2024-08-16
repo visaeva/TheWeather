@@ -6,9 +6,17 @@
 //
 
 import UIKit
+import CoreLocation
 
-class ViewController: UIViewController, NetworkServiceDelegate {
+class ViewController: UIViewController, NetworkServiceDelegate, CLLocationManagerDelegate {
+    let locationManager: CLLocationManager = CLLocationManager()
     
+    private var isCurrentTemperatureLoaded = false
+    private var isMaxMinTemperatureLoaded = false
+    private var isTimezoneLoaded = false
+    private var isWindLoaded = false
+    private var isPressureLoaded = false
+    private var isWeatherDescriptionLoaded = false
     private var networkService = NetworkService()
     
     private lazy var backgroundImage: UIImageView = {
@@ -23,7 +31,7 @@ class ViewController: UIViewController, NetworkServiceDelegate {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 17, weight: .bold)
         label.textAlignment = .center
-        label.text = "Москва"
+        label.text = "- / -"
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -39,7 +47,7 @@ class ViewController: UIViewController, NetworkServiceDelegate {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 12)
         label.textAlignment = .center
-        label.text = "Солнечно"
+        label.text = ""
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -48,7 +56,7 @@ class ViewController: UIViewController, NetworkServiceDelegate {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 40)
         label.textAlignment = .center
-        label.text = "4 °C"
+        label.text = "-"
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -115,7 +123,7 @@ class ViewController: UIViewController, NetworkServiceDelegate {
     
     private lazy var temperatureResult: UILabel = {
         let label = UILabel()
-        label.text = "10°/7°"
+        label.text = "-"
         label.font = UIFont.systemFont(ofSize: 10)
         label.textAlignment = .center
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -124,7 +132,7 @@ class ViewController: UIViewController, NetworkServiceDelegate {
     
     private lazy var windResult: UILabel = {
         let label = UILabel()
-        label.text = "6 m/s"
+        label.text = "-"
         label.font = UIFont.systemFont(ofSize: 10)
         label.textAlignment = .center
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -133,11 +141,21 @@ class ViewController: UIViewController, NetworkServiceDelegate {
     
     private lazy var atmResult: UILabel = {
         let label = UILabel()
-        label.text = "747 mm"
+        label.text = "-"
         label.font = UIFont.systemFont(ofSize: 10)
         label.textAlignment = .center
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
+    }()
+    
+    private lazy var activityIndicator: UIActivityIndicatorView = {
+        let activityIndicator = UIActivityIndicatorView()
+        activityIndicator.style = .large
+        activityIndicator.translatesAutoresizingMaskIntoConstraints = false
+        activityIndicator.hidesWhenStopped = true
+        activityIndicator.color = .white
+        activityIndicator.startAnimating()
+        return activityIndicator
     }()
     
     override func viewDidLoad() {
@@ -148,7 +166,59 @@ class ViewController: UIViewController, NetworkServiceDelegate {
         setupConstraints()
         
         networkService.delegate = self
-        networkService.startFetchingData()
+        
+        locationManager.delegate = self
+        locationManager.desiredAccuracy = kCLLocationAccuracyBest
+        locationManager.requestWhenInUseAuthorization()
+        locationManager.startUpdatingLocation()
+    }
+    
+    func didFinishedMaxMinTemperature(maxTemperature: Float, minTemperature: Float) {
+        DispatchQueue.main.async {
+            self.temperatureResult.text = "\(maxTemperature)° /\(minTemperature)°"
+            self.isMaxMinTemperatureLoaded = true
+            self.checkIfAllDataLoaded()
+        }
+    }
+    
+    func didFinishedCurrentTemperature(_ temperature: Float) {
+        DispatchQueue.main.async {
+            self.temperatureLabel.text = "\(temperature)°C"
+            self.isCurrentTemperatureLoaded = true
+            self.checkIfAllDataLoaded()
+        }
+    }
+    
+    func didFinishedTimeZome(_ timezone: String) {
+        DispatchQueue.main.async {
+            self.weatherLabel.text = "\(timezone)"
+            self.isTimezoneLoaded = true
+            self.checkIfAllDataLoaded()
+        }
+    }
+    
+    func didFinishedPressure(_ pressure: Int) {
+        DispatchQueue.main.async {
+            self.atmResult.text = "\(pressure) mm"
+            self.isPressureLoaded = true
+            self.checkIfAllDataLoaded()
+        }
+    }
+    
+    func didFinishedWind(_ wind: Float) {
+        DispatchQueue.main.async {
+            self.windResult.text = "\(wind) m/s"
+            self.isWindLoaded = true
+            self.checkIfAllDataLoaded()
+        }
+    }
+    
+    func didFinishedCurrentWeatherDescription(_ description: String) {
+        DispatchQueue.main.async {
+            self.weatherDescription.text = "\(description)"
+            self.isWeatherDescriptionLoaded = true
+            self.checkIfAllDataLoaded()
+        }
     }
     
     private func setupUI() {
@@ -158,12 +228,14 @@ class ViewController: UIViewController, NetworkServiceDelegate {
         view.addSubview(weatherDescription)
         view.addSubview(temperatureLabel)
         view.addSubview(pictureStackView)
+        view.addSubview(activityIndicator)
         
         addIconAndLabel(to: pictureStackView, icon: temperatureView, label: temperatureLabelView, label1: temperatureResult)
         addIconAndLabel(to: pictureStackView, icon: windView, label: windLabelView, label1: windResult)
         addIconAndLabel(to: pictureStackView, icon: atmView, label: atmLabelView, label1: atmResult)
         
     }
+    
     private func setupNavBar() {
         navigationController?.navigationBar.barTintColor = .white
         title = "Погода"
@@ -200,8 +272,8 @@ class ViewController: UIViewController, NetworkServiceDelegate {
             pictureStackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             pictureStackView.topAnchor.constraint(equalTo: temperatureLabel.bottomAnchor, constant: 250),
             
-            
-        ]
+            activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor)]
         )
     }
     
@@ -213,44 +285,37 @@ class ViewController: UIViewController, NetworkServiceDelegate {
         stackView.addArrangedSubview(container)
     }
     
-    func didFinishedMaxMinTemperature(maxTemperature: Float, minTemperature: Float) {
-        DispatchQueue.main.async {
-            self.temperatureResult.text = "\(maxTemperature)° /\(minTemperature)°"
-        }
-    }
-    
-    func didFinishedCurrentTemperature(_ temperature: Float) {
-        DispatchQueue.main.async {
-            self.temperatureLabel.text = "\(temperature)°C"
-        }
-    }
-    
-    func didFinishedTimeZome(_ timezone: String) {
-        DispatchQueue.main.async {
-            self.weatherLabel.text = "\(timezone)"
-        }
-    }
-    
-    func didFinishedPressure(_ pressure: Int) {
-        DispatchQueue.main.async {
-            self.atmResult.text = "\(pressure) mm"
-        }
-    }
-    
-    func didFinishedWind(_ wind: Float) {
-        DispatchQueue.main.async {
-            self.windResult.text = "\(wind) m/s"
-        }
-    }
-    
-    func didFinishedCurrentWeatherDescription(_ description: String) {
-        DispatchQueue.main.async {
-            self.weatherDescription.text = "\(description)"
-        }
-    }
-    
     @objc private func menuButtonTapped() {
         print("Меню нажали")
+    }
+    
+    private func checkIfAllDataLoaded() {
+        if isCurrentTemperatureLoaded &&
+            isMaxMinTemperatureLoaded &&
+            isTimezoneLoaded &&
+            isWindLoaded &&
+            isPressureLoaded &&
+            isWeatherDescriptionLoaded {
+            DispatchQueue.main.async {
+                self.activityIndicator.stopAnimating()
+            }
+        }
+    }
+    
+    //MARK: - CLLocationManagerDelegate
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        guard let currentLocation = locations.last else { return }
+        
+        if currentLocation.horizontalAccuracy > 0 {
+            locationManager.stopUpdatingLocation()
+            let latitude = currentLocation.coordinate.latitude
+            let longitude = currentLocation.coordinate.longitude
+            networkService.startFetchingData(latitude: latitude, longitude: longitude)
+        }
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        print("Ошибка при получении местоположения: \(error.localizedDescription)")
     }
 }
 

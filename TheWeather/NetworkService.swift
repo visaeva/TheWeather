@@ -17,11 +17,10 @@ protocol NetworkServiceDelegate: AnyObject {
 }
 
 class NetworkService {
-    
     weak var delegate: NetworkServiceDelegate?
     
-    func fetchWeatherData() async throws {
-        let url = URL(string: "https://api.open-meteo.com/v1/forecast?latitude=55.7558&longitude=37.6176&daily=temperature_2m_max,temperature_2m_min,wind_speed_10m_max,weathercode&hourly=temperature_2m,pressure_msl&timezone=Europe/Moscow&format=flatbuffers")!
+    func fetchWeatherData(latitude: Double, longitude: Double) async throws {
+        let url = URL(string: "https://api.open-meteo.com/v1/forecast?latitude=\(latitude)&longitude=\(longitude)&daily=temperature_2m_max,temperature_2m_min,wind_speed_10m_max,weathercode,&hourly=temperature_2m,pressure_msl&timezone=auto&format=flatbuffers")!
         
         let responses = try await WeatherApiResponse.fetch(url: url)
         
@@ -44,6 +43,7 @@ class NetworkService {
                 let temperature2m: [Float]
                 let pressureMSL: [Float]
             }
+            
             struct Daily {
                 let time: [Date]
                 let temperature2mMax: [Float]
@@ -62,7 +62,8 @@ class NetworkService {
         guard let temperature2mMax = daily.variables(at: 0)?.values,
               let temperature2mMin = daily.variables(at: 1)?.values,
               let windSpeed10mMax = daily.variables(at: 2)?.values,
-              let weatherCode = daily.variables(at: 3)?.values else {
+              let weatherCode = daily.variables(at: 3)?.values
+        else {
             print("Ошибка при получении данных daily")
             return
         }
@@ -79,6 +80,7 @@ class NetworkService {
                 temperature2mMin: temperature2mMin,
                 windSpeed10mMax: windSpeed10mMax,
                 weatherCode: weatherCode
+                
             )
         )
         
@@ -102,6 +104,7 @@ class NetworkService {
         let currentWeatherCode = currentWeatherCodeIndex != nil ? data.daily.weatherCode[currentWeatherCodeIndex!] : 0
         let weatherDescription = weatherCodes[Int(currentWeatherCode)] ?? "Неизвестное описание погоды"
         
+        
         let dateFormatter = DateFormatter()
         dateFormatter.timeZone = .current
         dateFormatter.dateFormat = "yyyy-MM-dd"
@@ -123,10 +126,10 @@ class NetworkService {
         delegate?.didFinishedCurrentWeatherDescription(weatherDescription)
     }
     
-    func startFetchingData() {
+    func startFetchingData(latitude: Double, longitude: Double) {
         Task {
             do {
-                try await fetchWeatherData()
+                try await fetchWeatherData(latitude: latitude, longitude: longitude)
             } catch {
                 print("Ошибка: \(error)")
             }
