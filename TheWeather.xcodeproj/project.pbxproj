@@ -16,6 +16,7 @@
 		4C8785EE2C6E0BDC00E14C76 /* OpenMeteoSdk in Frameworks */ = {isa = PBXBuildFile; productRef = 4C8785ED2C6E0BDC00E14C76 /* OpenMeteoSdk */; };
 		4C8785F02C6E0C0100E14C76 /* NetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C8785EF2C6E0C0100E14C76 /* NetworkService.swift */; };
 		4C8785F22C6E35E300E14C76 /* WeatherCodes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C8785F12C6E35E200E14C76 /* WeatherCodes.swift */; };
+		4CA7FF382C734C1D00ECCBB6 /* WeatherStruct.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CA7FF372C734C1D00ECCBB6 /* WeatherStruct.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -29,6 +30,7 @@
 		4C8785E22C6CCD2A00E14C76 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4C8785EF2C6E0C0100E14C76 /* NetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
 		4C8785F12C6E35E200E14C76 /* WeatherCodes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherCodes.swift; sourceTree = "<group>"; };
+		4CA7FF372C734C1D00ECCBB6 /* WeatherStruct.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherStruct.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -76,6 +78,7 @@
 				4C8785D62C6CCD2200E14C76 /* SceneDelegate.swift */,
 				4C8785D82C6CCD2200E14C76 /* ViewController.swift */,
 				4C8785EF2C6E0C0100E14C76 /* NetworkService.swift */,
+				4CA7FF372C734C1D00ECCBB6 /* WeatherStruct.swift */,
 				4C8785F12C6E35E200E14C76 /* WeatherCodes.swift */,
 				4C8785DD2C6CCD2A00E14C76 /* Assets.xcassets */,
 				4C8785DF2C6CCD2A00E14C76 /* LaunchScreen.storyboard */,
@@ -165,6 +168,7 @@
 				4C8785D92C6CCD2200E14C76 /* ViewController.swift in Sources */,
 				4C8785D52C6CCD2200E14C76 /* AppDelegate.swift in Sources */,
 				4C8785D72C6CCD2200E14C76 /* SceneDelegate.swift in Sources */,
+				4CA7FF382C734C1D00ECCBB6 /* WeatherStruct.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

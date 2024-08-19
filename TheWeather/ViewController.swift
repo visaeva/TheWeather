@@ -9,7 +9,7 @@ import UIKit
 import CoreLocation
 
 class ViewController: UIViewController, NetworkServiceDelegate, CLLocationManagerDelegate {
-    let locationManager: CLLocationManager = CLLocationManager()
+    private let locationManager: CLLocationManager = CLLocationManager()
     
     private var isCurrentTemperatureLoaded = false
     private var isMaxMinTemperatureLoaded = false
@@ -174,27 +174,21 @@ class ViewController: UIViewController, NetworkServiceDelegate, CLLocationManage
     }
     
     func didFinishedMaxMinTemperature(maxTemperature: Float, minTemperature: Float) {
-        DispatchQueue.main.async {
-            self.temperatureResult.text = "\(maxTemperature)° /\(minTemperature)°"
-            self.isMaxMinTemperatureLoaded = true
-            self.checkIfAllDataLoaded()
-        }
+        self.temperatureResult.text = "\(maxTemperature)° /\(minTemperature)°"
+        self.isMaxMinTemperatureLoaded = true
+        self.checkIfAllDataLoaded()
     }
     
     func didFinishedCurrentTemperature(_ temperature: Float) {
-        DispatchQueue.main.async {
-            self.temperatureLabel.text = "\(temperature)°C"
-            self.isCurrentTemperatureLoaded = true
-            self.checkIfAllDataLoaded()
-        }
+        self.temperatureLabel.text = "\(temperature)°C"
+        self.isCurrentTemperatureLoaded = true
+        self.checkIfAllDataLoaded()
     }
     
     func didFinishedTimeZome(_ timezone: String) {
-        DispatchQueue.main.async {
-            self.weatherLabel.text = "\(timezone)"
-            self.isTimezoneLoaded = true
-            self.checkIfAllDataLoaded()
-        }
+        self.weatherLabel.text = "\(timezone)"
+        self.isTimezoneLoaded = true
+        self.checkIfAllDataLoaded()
     }
     
     func didFinishedPressure(_ pressure: Int) {
@@ -206,19 +200,20 @@ class ViewController: UIViewController, NetworkServiceDelegate, CLLocationManage
     }
     
     func didFinishedWind(_ wind: Float) {
-        DispatchQueue.main.async {
-            self.windResult.text = "\(wind) m/s"
-            self.isWindLoaded = true
-            self.checkIfAllDataLoaded()
-        }
+        self.windResult.text = "\(wind) m/s"
+        self.isWindLoaded = true
+        self.checkIfAllDataLoaded()
     }
     
     func didFinishedCurrentWeatherDescription(_ description: String) {
-        DispatchQueue.main.async {
-            self.weatherDescription.text = "\(description)"
-            self.isWeatherDescriptionLoaded = true
-            self.checkIfAllDataLoaded()
+        self.weatherDescription.text = "\(description)"
+        if let imageName = weatherImages[description] {
+            self.weatherImage.image = UIImage(named: imageName)
+        } else {
+            self.weatherImage.image = UIImage(named: "weather1")
         }
+        self.isWeatherDescriptionLoaded = true
+        self.checkIfAllDataLoaded()
     }
     
     private func setupUI() {
@@ -248,6 +243,15 @@ class ViewController: UIViewController, NetworkServiceDelegate, CLLocationManage
         )
         menuButton.tintColor = .black
         navigationItem.leftBarButtonItem = menuButton
+        
+        let refreshButton = UIBarButtonItem(
+            image: UIImage(systemName: "arrow.circlepath"),
+            style: .plain,
+            target: self,
+            action: #selector(refreshButtonTapped)
+        )
+        refreshButton.tintColor = .black
+        navigationItem.rightBarButtonItem = refreshButton
     }
     
     private func setupConstraints() {
@@ -287,6 +291,18 @@ class ViewController: UIViewController, NetworkServiceDelegate, CLLocationManage
     
     @objc private func menuButtonTapped() {
         print("Меню нажали")
+    }
+    
+    @objc private func refreshButtonTapped() {
+        activityIndicator.startAnimating()
+        
+        if let currentLocation = locationManager.location {
+            let latitude = currentLocation.coordinate.latitude
+            let longitude = currentLocation.coordinate.longitude
+            networkService.startFetchingData(latitude: latitude, longitude: longitude)
+        } else {
+            print("Не удалось получить текущее местоположение.")
+        }
     }
     
     private func checkIfAllDataLoaded() {
