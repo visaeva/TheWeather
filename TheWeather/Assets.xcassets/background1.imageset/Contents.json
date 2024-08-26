@@ -1,0 +1,21 @@
+{
+  "images" : [
+    {
+      "filename" : "img2.akspic.ru-oblako-atmosfera-ekoregion-poslesvechenie-lazurnyj-1242x2688.jpg",
+      "idiom" : "universal",
+      "scale" : "1x"
+    },
+    {
+      "idiom" : "universal",
+      "scale" : "2x"
+    },
+    {
+      "idiom" : "universal",
+      "scale" : "3x"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

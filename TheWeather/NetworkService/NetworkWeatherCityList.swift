@@ -1,25 +1,22 @@
 //
-//  NetworkService.swift
+//  NetworkWeatherCityList.swift
 //  TheWeather
 //
-//  Created by Victoria Isaeva on 15.08.2024.
+//  Created by Victoria Isaeva on 23.08.2024.
 //
+
 import Foundation
 import OpenMeteoSdk
 
-protocol NetworkServiceDelegate: AnyObject {
-    func didFinishedCurrentTemperature(_ temperature: Float)
-    func didFinishedMaxMinTemperature(maxTemperature: Float, minTemperature: Float)
-    func didFinishedTimeZome(_ timezone: String)
-    func didFinishedWind(_ wind: Float)
-    func didFinishedPressure(_ pressure: Int)
-    func didFinishedCurrentWeatherDescription(_ description: String)
+protocol NetworkServiceWeatherCityListDelegate: AnyObject {
+    func didFetchWeatherData(_ weatherData: [CityWeatherStruct])
 }
 
-class NetworkService {
-    weak var delegate: NetworkServiceDelegate?
+class NetworkServiceWeatherCityList {
+    weak var delegate: NetworkServiceWeatherCityListDelegate?
+    private var allWeatherData = [CityWeatherStruct]()
     
-    private func fetchWeatherData(latitude: Double, longitude: Double) async throws {
+    private func fetchWeatherData(cityName: String, latitude: Double, longitude: Double) async throws {
         let url = URL(string: "https://api.open-meteo.com/v1/forecast?latitude=\(latitude)&longitude=\(longitude)&daily=temperature_2m_max,temperature_2m_min,wind_speed_10m_max,weathercode,&hourly=temperature_2m,pressure_msl&timezone=auto&format=flatbuffers")!
         
         let responses = try await WeatherApiResponse.fetch(url: url)
@@ -91,31 +88,45 @@ class NetworkService {
         print("Код погоды: \(currentWeatherCode), Описание: \(weatherDescription)")
         
         DispatchQueue.main.async {
-            self.delegate?.didFinishedCurrentTemperature(currentTemperature)
-            self.delegate?.didFinishedMaxMinTemperature(maxTemperature: maxTemperature, minTemperature: minTemperature)
-            self.delegate?.didFinishedTimeZome(timezone)
-            self.delegate?.didFinishedWind(windSpeed)
-            self.delegate?.didFinishedPressure(Int(pressureMMHg))
-            self.delegate?.didFinishedCurrentWeatherDescription(weatherDescription)
+            let cityWeather = CityWeatherStruct(cityName: cityName, temperature: "\(currentTemperature)°C", highLowTemperature: "Max: \(maxTemperature)°C, Min: \(minTemperature)°C")
+            self.allWeatherData.append(cityWeather)
+            
+            if self.allWeatherData.count == 7 {
+                self.delegate?.didFetchWeatherData(self.allWeatherData)
+            }
         }
     }
     
-    func startFetchingData(latitude: Double, longitude: Double) {
+    
+    func startFetchingData(cityName: String, latitude: Double, longitude: Double) {
         Task {
             do {
-                try await fetchWeatherData(latitude: latitude, longitude: longitude)
+                try await fetchWeatherData(cityName: cityName, latitude: latitude, longitude: longitude)
             } catch {
                 print("Ошибка: \(error)")
             }
         }
     }
+    
+    func startFetchingWeatherForPredefinedCities() {
+        allWeatherData.removeAll()
+        
+        let citiesCoordinates: [String: (latitude: Double, longitude: Double)] = [
+            "New York": (40.7128, -74.0060),
+            "London": (51.5074, -0.1278),
+            "Tokyo": (35.6762, 139.6503),
+            "Moscow": (55.7558, 37.6176),
+            "Sydney": (-33.8688, 151.2093),
+            "Istanbul": (41.0082, 28.9784),
+            "Budapest": (47.4979, 19.0402)
+        ]
+        
+        for (city, coordinates) in citiesCoordinates {
+            print("Fetching weather for \(city) at latitude \(coordinates.latitude), longitude \(coordinates.longitude)")
+            startFetchingData(cityName: city, latitude: coordinates.latitude, longitude: coordinates.longitude)
+        }
+    }
+    
 }
 
-extension DateFormatter {
-    static let dateFormatter: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.timeZone = .current
-        formatter.dateFormat = "yyyy-MM-dd"
-        return formatter
-    }()
-}
+

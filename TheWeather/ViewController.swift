@@ -8,15 +8,10 @@
 import UIKit
 import CoreLocation
 
-class ViewController: UIViewController, NetworkServiceDelegate, CLLocationManagerDelegate {
+final class ViewController: UIViewController, NetworkServiceDelegate, CLLocationManagerDelegate {
     private let locationManager: CLLocationManager = CLLocationManager()
-    
-    private var isCurrentTemperatureLoaded = false
-    private var isMaxMinTemperatureLoaded = false
-    private var isTimezoneLoaded = false
-    private var isWindLoaded = false
-    private var isPressureLoaded = false
-    private var isWeatherDescriptionLoaded = false
+    private var loadedDataCount = 0
+    private let totalDataToLoad = 6
     private var networkService = NetworkService()
     
     private lazy var backgroundImage: UIImageView = {
@@ -166,43 +161,36 @@ class ViewController: UIViewController, NetworkServiceDelegate, CLLocationManage
         setupConstraints()
         
         networkService.delegate = self
-        
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
         locationManager.requestWhenInUseAuthorization()
         locationManager.startUpdatingLocation()
     }
     
+    // MARK: - Public Methods
     func didFinishedMaxMinTemperature(maxTemperature: Float, minTemperature: Float) {
-        self.temperatureResult.text = "\(maxTemperature)° /\(minTemperature)°"
-        self.isMaxMinTemperatureLoaded = true
-        self.checkIfAllDataLoaded()
+        self.temperatureResult.text = "\(maxTemperature)° / \(minTemperature)°"
+        self.loadedData()
     }
     
     func didFinishedCurrentTemperature(_ temperature: Float) {
         self.temperatureLabel.text = "\(temperature)°C"
-        self.isCurrentTemperatureLoaded = true
-        self.checkIfAllDataLoaded()
+        self.loadedData()
     }
     
     func didFinishedTimeZome(_ timezone: String) {
         self.weatherLabel.text = "\(timezone)"
-        self.isTimezoneLoaded = true
-        self.checkIfAllDataLoaded()
+        self.loadedData()
     }
     
     func didFinishedPressure(_ pressure: Int) {
-        DispatchQueue.main.async {
-            self.atmResult.text = "\(pressure) mm"
-            self.isPressureLoaded = true
-            self.checkIfAllDataLoaded()
-        }
+        self.atmResult.text = "\(pressure) mm"
+        self.loadedData()
     }
     
     func didFinishedWind(_ wind: Float) {
         self.windResult.text = "\(wind) m/s"
-        self.isWindLoaded = true
-        self.checkIfAllDataLoaded()
+        self.loadedData()
     }
     
     func didFinishedCurrentWeatherDescription(_ description: String) {
@@ -212,10 +200,10 @@ class ViewController: UIViewController, NetworkServiceDelegate, CLLocationManage
         } else {
             self.weatherImage.image = UIImage(named: "weather1")
         }
-        self.isWeatherDescriptionLoaded = true
-        self.checkIfAllDataLoaded()
+        self.loadedData()
     }
     
+    // MARK: - Private Methods
     private func setupUI() {
         view.addSubview(backgroundImage)
         view.addSubview(weatherLabel)
@@ -233,7 +221,7 @@ class ViewController: UIViewController, NetworkServiceDelegate, CLLocationManage
     
     private func setupNavBar() {
         navigationController?.navigationBar.barTintColor = .white
-        title = "Погода"
+        title = "Weather"
         
         let menuButton = UIBarButtonItem(
             image: UIImage(systemName: "line.horizontal.3"),
@@ -290,7 +278,8 @@ class ViewController: UIViewController, NetworkServiceDelegate, CLLocationManage
     }
     
     @objc private func menuButtonTapped() {
-        print("Меню нажали")
+        let cityListVC = CityListViewController()
+        navigationController?.pushViewController(cityListVC, animated: true)
     }
     
     @objc private func refreshButtonTapped() {
@@ -305,13 +294,13 @@ class ViewController: UIViewController, NetworkServiceDelegate, CLLocationManage
         }
     }
     
+    private func loadedData() {
+        loadedDataCount += 1
+        checkIfAllDataLoaded()
+    }
+    
     private func checkIfAllDataLoaded() {
-        if isCurrentTemperatureLoaded &&
-            isMaxMinTemperatureLoaded &&
-            isTimezoneLoaded &&
-            isWindLoaded &&
-            isPressureLoaded &&
-            isWeatherDescriptionLoaded {
+        if loadedDataCount == totalDataToLoad {
             DispatchQueue.main.async {
                 self.activityIndicator.stopAnimating()
             }
